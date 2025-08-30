@@ -1,0 +1,14 @@
+[project]
+name = "chess-bot"
+version = "0.1.0"
+description = "This a chess engine that uses simple herustics to determine the best move on a chess board. Built with Ian Wong"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "chess>=1.11.2",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.30.1",
+]
