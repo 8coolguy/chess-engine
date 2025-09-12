@@ -1,12 +1,15 @@
 from abc import ABC, abstractmethod
+from helper import apply_move
 import chess 
 import sys
 
 NAME = "BOT"
 AUTHOR = "8coolguy"
 class ChessEngineBase(ABC):
-    def __init__(self):
+    def __init__(self, time_limit, verbose):
         self.board = chess.Board() 
+        self.verbose = verbose
+        self.time_limit = time_limit
     def handleInput(self,command:str):
         parsedCommand = command.split()
         n = len(parsedCommand)
@@ -19,7 +22,7 @@ class ChessEngineBase(ABC):
             if AUTHOR: print("id author " + AUTHOR)
             print("uciok")
         elif parsedCommand[0] == "go":
-            print(self.determineBestMove())
+            print("bestmove " + self.determineBestMove().uci())
         elif parsedCommand[0] == "position":
             i = 1
             if parsedCommand[i] == "fen":
@@ -32,23 +35,14 @@ class ChessEngineBase(ABC):
             if parsedCommand[i] == "moves":
                 i+=1
                 while i < n:
-                    chess_board = self.apply_move(chess_board,parsedCommand[i])
+                    chess_board = apply_move(chess_board,parsedCommand[i])
                     i+=1
+            self.board = chess_board
         elif parsedCommand[0] == "option":
             pass
-    def apply_move(self,move_str):
-        """
-        Applies a move in UCI/long algebraic notation (e.g. 'e2e4', 'e7e8q') 
-        to the global chess.Board() instance.
-        move_str: str, move in long algebraic/UCI notation
-        Returns the updated board.
-        """
-        move = chess.Move.from_uci(move_str)  # parse the move
-        if move in self.board.legal_moves:
-            self.board.push(move)  # apply it
-        else:
-            raise ValueError(f"Illegal move: {move_str}")
-        return self.board
+    def setPosition(self, fen:str):
+        self.handleInput("position fen " + fen + " moves ")
+
     @abstractmethod
     def determineBestMove(self):
         pass
