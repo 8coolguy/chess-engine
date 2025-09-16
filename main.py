@@ -1,6 +1,8 @@
 import argparse
 from MinMaxEngine import MinMaxEngine
+from MinMaxAlphaBetaEngine import MinMaxAlphaBetaEngine
 import chess
+import time
 import sys
 from helper import apply_move
 def main():
@@ -19,6 +21,8 @@ def run_engine(engine_type, verbose, depth, time_limit, type):
         engine = None
         if engine_type == "MinMax":
             engine = MinMaxEngine(verbose = verbose, depth = depth, time_limit = time_limit)
+        elif engine_type =="MinMaxAlphaBeta":
+            engine = MinMaxAlphaBetaEngine(verbose=verbose, depth = depth, time_limit=time_limit)
             
         if type == "player":
             game_vs_human(engine)
@@ -33,9 +37,15 @@ def game_vs_human(engine):
     game = chess.Board()
     if not isWhite:
         engine.setPosition(game.fen())
+        start = time.perf_counter()
         bestMove = engine.determineBestMove().uci()
+        end = time.perf_counter()
+        elapsed = end - start
+        print("Time", round(elapsed))
+        print("Moves/sec Analyzed",float(engine.stattrack)//round(elapsed,2))
         game = apply_move(game, bestMove)
     print(game)
+    print("A B C D E F G H")
     while not game.is_checkmate():
         move = ""
         while True:
@@ -52,11 +62,18 @@ def game_vs_human(engine):
             print("Try Again")
         game = apply_move(game, move)
         print(game)
+        print("A B C D E F G H")
         engine.setPosition(game.fen())
+        start = time.perf_counter()
         bestMove = engine.determineBestMove().uci()
+        end = time.perf_counter()
+        elapsed = end - start
+        print("Time", round(elapsed))
+        print("Moves/sec Analyzed",float(engine.stattrack)//round(elapsed,2))
         print(bestMove)
         game = apply_move(game, bestMove)
         print(game)
+        print("A B C D E F G H")
 
 
 def game_with_uci():

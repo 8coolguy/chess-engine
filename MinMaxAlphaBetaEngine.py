@@ -1,5 +1,4 @@
 from ChessEngineBase import ChessEngineBase
-
 import chess
 from tqdm import tqdm
 piece_values = {
@@ -10,7 +9,7 @@ piece_values = {
     chess.QUEEN: 900,
     chess.KING: 20000
 }
-class MinMaxEngine(ChessEngineBase):
+class MinMaxAlphaBetaEngine(ChessEngineBase):
     def __init__(self,time_limit, verbose, depth):
         super().__init__(time_limit, verbose)
         self.depth = depth
@@ -20,37 +19,54 @@ class MinMaxEngine(ChessEngineBase):
         bestMove, evaluation = moves[0], float("inf")
         for move in tqdm(moves, disable = not self.verbose):
             self.board.push(move)
-            score = self.minimax(0)
+            score = self.minimax(depth = 1)
+            self.board.pop()
             if score < evaluation:
                 evaluation = score
                 bestMove = move
-            self.board.pop()
         return bestMove
         
     
     #uses the minimax algorithm at depth 5 to determine the best move on the chess board
     #used the point system example on the blog: https://healeycodes.com/building-my-own-chess-engine
-    def minimax(self, depth = 0) -> float:
-        self.stattrack+=1
+    def minimax(self, alpha=float("-inf"), beta=float("inf"), depth = 0) -> float:
         moves = list(self.board.legal_moves)
-        if depth == self.depth or self.board.is_game_over(): 
+        self.stattrack += 1
+        if depth == self.depth:
             return self.calculate_score()
+        if self.board.is_game_over(): 
+            result = self.board.outcome()
+            if result != True or result != False:
+                return 0
+            if result == self.board.turn:
+                return float("inf")
+            elif result != self.board.turn:
+                return float("-inf")
+
         #pick best score for the opponent
         if depth % 2:
+            #maximizing player
             value = float("-inf")
             for move in moves:
                 self.board.push(move)
-                temp = self.minimax(depth+1)
-                value = max(value,temp)
+                temp = self.minimax(alpha, beta, depth = depth + 1)
                 self.board.pop()
+                value = max(value,temp)
+                alpha = max(alpha, value)
+                if beta <= alpha:
+                    break
             return value
         else:
+            #minimizing player
             value = float("inf")
             for move in moves:
                 self.board.push(move)
-                temp = self.minimax(depth+1)
-                value = min(value,temp)
+                temp = self.minimax(alpha, beta, depth = depth + 1)
                 self.board.pop()
+                value = min(value,temp)
+                beta = min(beta, value)
+                if beta <= alpha:
+                    break
             return value
     def calculate_score(self):
         black_score,white_score = 0,0

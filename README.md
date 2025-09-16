@@ -5,8 +5,8 @@ A chess engine to maxamize the fun of the players. Currently in development.
 
 ## TODO: 
 - alpha beta pruning
-- increase depth
+- increase depth of the search by improving performance of search
 - classes to keep track of the different methods I use
 - negmax search
 - openings book
-- deep learnin chess engines
+- deep learning position evaluation

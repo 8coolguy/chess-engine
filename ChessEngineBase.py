@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import time
 from helper import apply_move
 import chess 
 import sys
@@ -10,6 +11,7 @@ class ChessEngineBase(ABC):
         self.board = chess.Board() 
         self.verbose = verbose
         self.time_limit = time_limit
+        self.stattrack = 0
     def handleInput(self,command:str):
         parsedCommand = command.split()
         n = len(parsedCommand)
