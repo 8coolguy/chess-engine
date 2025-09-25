@@ -33,7 +33,7 @@ class MinMaxAlphaBetaEngine(ChessEngineBase):
         moves = list(self.board.legal_moves)
         self.stattrack += 1
         if depth == self.depth:
-            return self.calculate_score()
+            return self.calculate_score((depth % 2) ^ self.board.turn)
         if self.board.is_game_over(): 
             result = self.board.outcome()
             if result != True or result != False:
@@ -68,7 +68,7 @@ class MinMaxAlphaBetaEngine(ChessEngineBase):
                 if beta <= alpha:
                     break
             return value
-    def calculate_score(self):
+    def calculate_score(self, turn ):
         black_score,white_score = 0,0
         for square in chess.SQUARES:
             at_square = self.board.piece_at(square)
@@ -77,8 +77,8 @@ class MinMaxAlphaBetaEngine(ChessEngineBase):
                 white_score += piece_values[at_square.piece_type]
             else:
                 black_score += piece_values[at_square.piece_type]
-        if self.board.turn == chess.WHITE: return white_score
-        else: return black_score
+        if turn == chess.WHITE: return white_score - black_score
+        else: return black_score - white_score
     
     def determineBestMove(self):
         self.stattrack = 0

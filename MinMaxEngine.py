@@ -34,7 +34,7 @@ class MinMaxEngine(ChessEngineBase):
         self.stattrack+=1
         moves = list(self.board.legal_moves)
         if depth == self.depth or self.board.is_game_over(): 
-            return self.calculate_score()
+            return self.calculate_score((depth % 2) ^ self.board.turn)
         #pick best score for the opponent
         if depth % 2:
             value = float("-inf")
@@ -52,7 +52,7 @@ class MinMaxEngine(ChessEngineBase):
                 value = min(value,temp)
                 self.board.pop()
             return value
-    def calculate_score(self):
+    def calculate_score(self,turn):
         black_score,white_score = 0,0
         for square in chess.SQUARES:
             at_square = self.board.piece_at(square)
@@ -61,8 +61,8 @@ class MinMaxEngine(ChessEngineBase):
                 white_score += piece_values[at_square.piece_type]
             else:
                 black_score += piece_values[at_square.piece_type]
-        if self.board.turn == chess.WHITE: return white_score
-        else: return black_score
+        if turn == chess.WHITE: return white_score - black_score
+        else: return black_score - white_score
     
     def determineBestMove(self):
         self.stattrack = 0
